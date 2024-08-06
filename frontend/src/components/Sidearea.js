@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import ConversationItem from "./ConversationItem";
+import { useNavigate } from "react-router";
 
 function Sidearea() {
+ 
   const [conversations, setconversations] = useState([
     {
       name: "text1",
@@ -25,6 +27,7 @@ function Sidearea() {
       timeStamp: "today",
     },
   ]);
+  const navigate=useNavigate();
   return (
     <div className="w-[30vw]  bg-gray-800 rounded-2xl text-white h-screen p-4">
       <div className="flex flex-col">
@@ -41,13 +44,18 @@ function Sidearea() {
         <div>
           {conversations.map((conversation) => {
             return (
-              <ConversationItem key={conversation.id} props={conversation} />
+              <ConversationItem key={conversation.id} props={conversation}  />
             );
           })}
         </div>
         {/* Add Friend Button */}
         <button className="w-full p-2 bg-blue-500 rounded hover:bg-blue-400">
           Add Friend
+        </button>
+      </div>
+      <div>
+      <button className="w-full p-2 mt-4 mb-4 bg-blue-500 rounded hover:bg-blue-400" onClick={()=>navigate("groups")}>
+          Online users
         </button>
       </div>
 
