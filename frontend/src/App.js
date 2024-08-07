@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import MainContainer from "./components/MainContainer";
 import Login from "./components/Login";
+import Signup from "./components/Signup";
 import { Routes, Route } from "react-router-dom";
 import WelcomePage from "./components/WelcomePage";
 import Chatarea from "./components/Chatarea";
@@ -14,6 +15,7 @@ function App() {
         {/* <MainContainer/> */}
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup/>}/>
           <Route path="app" element={<MainContainer />}>
             <Route path="Welcome" element={<WelcomePage />} />
             <Route path="chat" element={<Chatarea />} />

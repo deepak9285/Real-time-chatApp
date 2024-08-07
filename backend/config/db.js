@@ -5,6 +5,11 @@ exports.db_connect=()=>{
         useNewUrlParser:true,
         useUnifiedTopology:true,
     })
+    // mongoose.connect(process.env.Mongo_Atlas,{
+    //     useNewUrlParser:true,
+    //     useUnifiedTopology:true,
+    // })
+
     .then(()=>{
         console.log("db connected successfully");    
     })
