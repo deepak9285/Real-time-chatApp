@@ -1,68 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 function GroupUser() {
-  const users = [
-    {
-      id: 1,
-      name: "John",
-      age: 25,
-      isOnline: true,
-    },
-    {
-      id: 2,
-      name: "Jane",
-      age: 30,
-      isOnline: false,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      age: 35,
-      isOnline: true,
-    },
-  ];
+  const[users,setusers]=useState([]);
+  useEffect(()=>{
+    const storedUser=localStorage.getItem('userData');
+    if(storedUser){
+      try{
+      const parsedData=JSON.parse(storedUser);
+      if(Array.isArray(parsedData)){
+        setusers(parsedData);
+      }
+      else{
+        console.error("Stored data is not array");
+      }
+    }
+    catch(error){
+      console.log("Failed to parse stored user",error);
+    }
+    
+    }
+  },[]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg w-[70%]  mx-auto">
@@ -77,7 +34,7 @@ function GroupUser() {
         />
       </div>
       <ul className="space-y-4">
-        {users.map((user, index) => (
+        {users.length>0?users.map((user, index) => (
           <li key={index} className="flex hover:bg-slate-200 hover:cursor-pointer shadow-md items-center space-x-4">
             <div
               className={`w-4 h-4 rounded-full ${
@@ -86,7 +43,7 @@ function GroupUser() {
             ></div>
             <p className="text-lg text-gray-800">{user.name}</p>
           </li>
-        ))}
+        )):" "}
       </ul>
     </div>
   );
