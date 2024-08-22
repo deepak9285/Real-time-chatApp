@@ -14,7 +14,7 @@ app.use(cors({
   methods:["POST","GET"],
   credentials:true
 }));
-app.get("/",(req,res)=>{res.send("Api is running")});
+app.get("/",(req,res)=>{res.json("Api is running")});
 app.use(express.json());
 app.use("/users",routes);
 app.listen(process.env.PORT||5000,console.log("server is running"));
