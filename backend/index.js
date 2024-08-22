@@ -9,10 +9,12 @@ require("dotenv").config();
 
 const{db_connect}=require("./config/db");
 db_connect();
-app.use(cors());
+app.use(cors({
+  origin:["https://deploy-mern-1whq.vercel.app"],
+  methods:["POST","GET"],
+  credentials:true
+}));
 app.get("/",(req,res)=>{res.send("Api is running")});
 app.use(express.json());
 app.use("/users",routes);
-app.use("/chat",chatRoutes);
-app.use("/messages",messageRoutes);
 app.listen(process.env.PORT||5000,console.log("server is running"));
