@@ -9,7 +9,7 @@ const ChatSchema=mongoose.Schema({
             ref:"User"
         }
     ],
-    lastmessages:[
+    latestmessages:[
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:"Message"

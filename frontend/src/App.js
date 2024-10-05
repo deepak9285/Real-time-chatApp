@@ -19,7 +19,7 @@ function App() {
           <Route path="/signup" element={<Signup/>}/>
           <Route path="app" element={<MainContainer />}>
             <Route path="Welcome" element={<WelcomePage />} />
-            <Route path="chat/:chat_id&:chat_user" element={<Chatarea />} />
+            <Route path="chat/:_id" element={<Chatarea />} />
             <Route path="users" element={<WelcomePage />} />
             <Route path="groups" element={<Users/>} />
           </Route>

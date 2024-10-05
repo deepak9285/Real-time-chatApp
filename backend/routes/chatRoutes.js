@@ -1,5 +1,5 @@
 const express=require("express");
-const {accessChat,fetchChats}=require("../controllers/chat")
+const {fetchChats,accessChat}=require("../controllers/chat")
 const {protect} =require("../middleware/authmiddleware")
 const router=express.Router();
 router.route("/").post(protect,accessChat);

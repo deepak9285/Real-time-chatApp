@@ -1,5 +1,4 @@
 const asyncHandler=require("express-async-handler");
-const chat=require('../models/ChatModel');
 const User=require('../models/UserModel');
 const Chat = require("../models/ChatModel");
 const accessChat=asyncHandler(async(req,res)=>{
@@ -9,10 +8,7 @@ const accessChat=asyncHandler(async(req,res)=>{
         return res.status(400);
     }
     var isChat=await Chat.find({
-        $and:[
-            {User:{$eleMatch:{$eq:req.user._id}}},
-            {users:{$eleMatch:{$eq:userId}}},
-        ]
+        users: { $all: [req.user._id, userId] }
     }).populate("users","-password")
     .populate("latestMessage");
     isChat=await User.populate(isChat,{
@@ -27,11 +23,12 @@ const accessChat=asyncHandler(async(req,res)=>{
             users:[req.user._id,userId],
         };
         try{
-            const createChat=await chat.create(chatData);
-            const FullChat=await fetchChats.findOne({_id:createChat._id}).populate(
+            const createChat=await Chat.create(chatData);
+            const FullChat=await Chat.findOne({_id:createChat._id}).populate(
                 "users","-password"
             );
             res.status(200).json(FullChat);
+            console.log(FullChat);
 
         }
         catch(error){
@@ -41,27 +38,32 @@ const accessChat=asyncHandler(async(req,res)=>{
 
     }
 });
-const fetchChats=asyncHandler(async(req,res)=>{
-    try{
-        console.log("Fetch chats API:",req);
-        Chat.find({users:{$eleMatch:{$eq:req.user._id}}})
-        .populate("users","-password")
-        .populate("groupAdmin","-password")
-        .populate("latestMessage")
-        .sort({updatedAt:-1})
-        .then(async(results)=>{
-            results=await User.populate(results,{
-                path:"latestMessage.sender",
-                select:"name email",
-            });
-            res.status(200).send(results);
-        });
-        
-    }
-    catch(error){
-        res.status(400);
-        throw new Error(error.message);
-    }
-})
 
-module.exports={accessChat,fetchChats}
+
+const fetchChats = asyncHandler(async (req, res) => {
+  try {
+    console.log("Fetch chats API:", req.user);
+
+    // Correcting the query to use $in instead of $eleMatch
+    await Chat.find({
+      users: { $in: [req.user._id] }, // Using $in to match the user ID in the users array
+    })
+      .populate("users", "-password")
+    //   .populate("groupAdmin", "-password")
+      .populate("latestmessages")
+      .sort({ updatedAt: -1 })
+      .then(async (results) => {
+        results = await User.populate(results, {
+          path: "latestmessages.sender",
+          select: "name email",
+        });
+        res.status(200).send(results);
+        console.log(results);
+      });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+module.exports = { fetchChats,accessChat };

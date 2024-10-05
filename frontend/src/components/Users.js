@@ -44,7 +44,7 @@ export default function Users() {
   // Function to initiate chat
   const Makechat = (selectedUser) => {
     console.log("Creating a chat with", selectedUser.name); // Logging selected user's name
-
+    console.log(selectedUser._id);
     // Sending POST request to create a chat
     fetch("http://localhost:8080/chat/", {
       method: "POST",

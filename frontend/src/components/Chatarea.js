@@ -1,17 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
+// import { FaRegTrashAlt } from "react-icons/fa";
 import MessageByMe from "./MessageByMe";
 import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import MessageByOther from "./MessageByOther";
 
 function Chatarea() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const chat_id = queryParams.get("id");
+  const chat_user = queryParams.get("user");
   const [messages, setMessages] = useState("");
   const messageEndRef = useRef(null);
-  const { chat_id, chat_user } = useParams();  // Destructure useParams
+  //const { chat_id, chat_user } = useParams();  // Destructure useParams
   const userData = JSON.parse(localStorage.getItem("userData"));
   const [allMessages, setAllMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
-
+  // const dyParams = useParams();
+ // const [chat_id, chat_user] = dyParams._id.split("&");
+ console.log(chat_id);
   const handleSend = async () => {
     if (!messages) return; // Don't send empty messages
     const config = {
