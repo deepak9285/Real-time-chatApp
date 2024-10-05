@@ -1,53 +1,48 @@
-// const catchAsync = require("../utils/catchAsync");
-// const AppError = require('../utils/AppError');
-const Message=require('../models/MessageModel')
-const User=require('../models/UserModel')
-const Chat=require('../models/ChatModel');
+const expressAsyncHandler=require("express-async-handler");
+const Message=require("../models/MessageModel");
+const User=require("../models/UserModel");
+const chat=require("../models/ChatModel");
 
-
-exports.sendMessage=async(req,res,next)=>{
-
-    const {content,chatId}=req.body;
-
-    if(!content||!chatId)
-    {
-        return next(new AppError("Invalid data passed into request",400))
+const allMessages=expressAsyncHandler(async(req,res)=>{
+    try{
+        const messages=await Message.find({chat:req.params.chatId})
+        .populate("sender","name")
+        .populate("reciever")
+        .populate("chat");
+        res.json(messages);
+    }catch(error){
+        res.status(400);
+        throw new Error(error.message);
     }
-
-    let newMessage={
+});
+const sendMessage=expressAsyncHandler(async(req,res)=>{
+    const {content,chatId}=req.body;
+    if(!content||!chatId){
+        console.log("Invalid data passed into request");
+        return res.sendStatus(400);
+    }
+    var newMessage={
         sender:req.user._id,
         content:content,
-        chat:chatId
+        chat:chatId,
     };
-
-    let message=await Message.create(newMessage);
-    message=await message.populate("sender","name pic")
-    message=await message.populate("chat")
-    message=await User.populate(message,{
-        path:'chat.users',
-        select:'name pic email'
-    })
-
-    await Chat.findByIdAndUpdate(req.body.chatId,{latestMessage:message})
-    res.status(200).json({
-        status:'success',
-        data:message
-    })
-
-}
-
-exports.getAllMessages=async(req,res,next)=>{
-
-    const message=await Message.find({chat:req.params.chatId}).populate('sender',"name pic email");
-
-    if(!message)
-    {
-        next(new AppError('Something went wrong while fetching messages',400))
+    try{
+        var message=await Message.create(newMessage);
+        console.log(message);
+        message=await message.populate("sender","name pic");
+        message=await message.populate("chat");
+        message=await message.populate("reciever");
+        message=await User.populate(message,{
+            path:"chat.users",
+            select:"name email",
+        })
+        await chat.findByIdAndUpdate(req.body.chatId,{latestMessage:message});
+        res.json(message);
+        
     }
-    
-    res.status(200).json({
-        status:'success',
-        message:message
-    })
-
-}
+    catch(error){
+        res.status(400);
+        throw new Error(error.message);
+    }
+});
+module.exports={allMessages,sendMessage};

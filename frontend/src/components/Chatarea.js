@@ -1,73 +1,110 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import MessageByMe from "./MessageByMe";
+import { useParams } from "react-router-dom";
 import MessageByOther from "./MessageByOther";
 
 function Chatarea() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState("");
+  const messageEndRef = useRef(null);
+  const { chat_id, chat_user } = useParams();  // Destructure useParams
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const [allMessages, setAllMessages] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
-  const handleSend = () => {
-    if (input.trim()) {
-      setMessages([...messages, { text: input, sender: "me" }]);
-      setInput(""); // Clear input after sending
-      
-      // Simulate a response from the other user after a delay
-      setTimeout(() => {
-        const response = getRandomResponse();
-        setMessages((prevMessages) => [...prevMessages, { text: response, sender: "other" }]);
-      }, 1000); // Adjust delay as needed
-    }
+  const handleSend = async () => {
+    if (!messages) return; // Don't send empty messages
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userData.token}`,
+        "Content-Type": "application/json",
+      },
+    };
+    fetch("http://localhost:8080/message/", {
+      method: "POST",
+      headers: config.headers,
+      body: JSON.stringify({
+        content: messages,
+        chatId: chat_id, // Use destructured chat_id
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Message sent", data);
+        setMessages(""); // Clear the input after sending
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
-  // Function to generate random responses
-  const getRandomResponse = () => {
-    const responses = [
-      "Hello there!",
-      "How's it going?",
-      "I'm here to chat.",
-      "What can I do for you?",
-      "Let's talk about something interesting!",
-      "What's up?",
-      "How can I help you?",
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
+  useEffect(() => {
+    if (!chat_id) return; // Don't fetch messages if there's no chat ID
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userData.token}`,
+      },
+    };
+
+    fetch(`http://localhost:8080/message/${chat_id}`, { // Fix URL path
+      method: "GET",
+      headers: config.headers,
+    })
+      .then((response) => response.json())
+      .then(({ data }) => {
+        setAllMessages(data);
+        setLoaded(true);
+      })
+      .catch((error) => console.error("Error fetching messages:", error));
+  }, [chat_id, userData.token]); // Add userData.token dependency
+
+  if (!chat_id) {
+    return <div>Error: No chat ID provided in the URL</div>;
+  }
+
+  if (!loaded) {
+    return (
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
 
   return (
-    <div className="border bg-white w-[70vw] rounded-2xl h-screen flex flex-col">
-      {/* Header */}
-      <div className="bg-blue-500 text-white p-4 rounded-t-2xl flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Chat Area</h1>
-        <FaRegTrashAlt />
+    <div>
+      <h1>Chat with {chat_user}</h1> {/* Show chat user */}
+      <div>
+        {allMessages
+          .slice(0)
+          .reverse()
+          .map((message, index) => {
+            const sender = message.sender;
+            const self_id = userData._id;
+            if (sender.id === self_id) {
+              return (
+                <MessageByMe props={message} content={messages} key={index} />
+              );
+            } else {
+              return (
+                <MessageByOther props={sender} content={messages} key={index} />
+              );
+            }
+          })}
       </div>
-
-      {/* Messages */}
-      <div className="flex-1 p-4 border bg-slate-400 overflow-y-auto">
-        {messages.map((message, index) =>
-          message.sender === "me" ? (
-            <MessageByMe key={index} text={message.text} />
-          ) : (
-            <MessageByOther key={index} text={message.text} />
-          )
-        )}
-      </div>
-
-      {/* Input Area */}
-      <div className="bg-gray-100 p-4 rounded-b-2xl flex items-center">
+      <div ref={messageEndRef} />
+      <div className="border">
         <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-          placeholder="Type a message..."
+          placeholder="Type a message"
+          value={messages}
+          onChange={(e) => setMessages(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSend();
+            }
+          }}
         />
-        <button
-          className="bg-blue-500 text-white p-2 ml-2 rounded-md"
-          onClick={handleSend}
-        >
-          Send
-        </button>
+        <button className="border" onClick={handleSend}>Send</button>
       </div>
     </div>
   );

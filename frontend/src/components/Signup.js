@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 function Signup() {
@@ -23,11 +22,12 @@ function Signup() {
       });
 
       if (!response.ok) {
-        throw new Error("Signup failed");
+        const errorMessage = await response.text(); // Or response.json() depending on backend
+        throw new Error(errorMessage || "Signup failed");
       }
 
       const result = await response.json();
-
+      localStorage.setItem("userData", JSON.stringify(result));
       setSuccess("User created successfully!");
       setName("");
       setEmail("");

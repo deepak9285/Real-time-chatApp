@@ -13,6 +13,10 @@ const MessageSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
     },
+    content:{
+      type:String,
+      trim:true,
+    }
   },
   {
     timeStamp: true,

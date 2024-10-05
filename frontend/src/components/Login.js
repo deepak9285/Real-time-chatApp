@@ -27,39 +27,29 @@ function Login() {
       const result = await response.json();
       setSuccess("User logged in successfully");
       console.log(result);
+      localStorage.setItem("userData", JSON.stringify(result));
       navigate("/app/Welcome");
 
       // Retrieve existing users from localStorage
-      const existingUsersStr = localStorage.getItem("userData");
-      let existingUsers = [];
+      // const existingUsersStr = localStorage.getItem("userData");
+      // let existingUsers = [];
 
-      // Check if existingUsersStr is not null and parse it
-      if (existingUsersStr) {
-        try {
-          existingUsers = JSON.parse(existingUsersStr);
-          // Ensure that the parsed data is an array
-          if (!Array.isArray(existingUsers)) {
-            throw new Error("Stored users data is not an array");
-          }
-        } catch (e) {
-          console.error("Failed to parse existing users", e);
-          existingUsers = [];
-        }
-      }
+      // // Check if existingUsersStr is not null and parse it
+      // if (existingUsersStr) {
+      //   try {
+      //     existingUsers = JSON.parse(existingUsersStr);
+      //     // Ensure that the parsed data is an array
+      //     if (!Array.isArray(existingUsers)) {
+      //       throw new Error("Stored users data is not an array");
+      //     }
+      //   } catch (e) {
+      //     console.error("Failed to parse existing users", e);
+      //     existingUsers = [];
+      //   }
+      // }
 
-      const userExists = existingUsers.some(
-        (user) => user.email === result.user.email
-      );
-
-      if (!userExists) {
-        // Add the new user to the list
-        existingUsers.push(result.user);
-        // Store the updated list back in localStorage
-        localStorage.setItem("userData", JSON.stringify(existingUsers));
-      }
-      localStorage.setItem("currentUserEmail", result.user.email);
       // Store the updated list back in localStorage
-    //  localStorage.setItem("userData", JSON.stringify(existingUsers));
+      //  localStorage.setItem("userData", JSON.stringify(existingUsers));
     } catch (error) {
       console.error("Failed to login", error);
       setError("Failed to login user");

@@ -101,3 +101,17 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+exports.fetchAllUserController=async(req,res)=>{
+  const keyword=req.query.search
+  ?{
+    $or:[
+      {name:{$regex:keyword,$options:'i'}},
+      {email:{$regex:keyword,$options:'i'}},
+    ],
+  }:{};
+  const users=await User.find(keyword).find({
+    _id:{$ne:req.user._id},
+  });
+  res.send(users);
+}
