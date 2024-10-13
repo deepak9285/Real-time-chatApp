@@ -20,7 +20,7 @@ function App() {
           <Route path="app" element={<MainContainer />}>
             <Route path="Welcome" element={<WelcomePage />} />
             <Route path="chat/:_id" element={<Chatarea />} />
-            <Route path="users" element={<WelcomePage />} />
+            {/* <Route path="users" element={<WelcomePage />} /> */}
             <Route path="groups" element={<Users/>} />
           </Route>
         </Routes>

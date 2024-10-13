@@ -66,7 +66,7 @@ function Sidearea() {
                     className=""
                     onClick={() =>
                       navigate(
-                       `/chat?id=${conversation._id}&user=${conversation.users[1].name}`
+                       `chat?id=${conversation._id}&user=${conversation.users[1].name}`
                       )
                     }
                   >

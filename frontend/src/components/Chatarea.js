@@ -8,12 +8,15 @@ import MessageByOther from "./MessageByOther";
 function Chatarea() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const chat_id = queryParams.get("id");
-  const chat_user = queryParams.get("user");
+  // const chat_id = queryParams.get("id");
+  // const chat_user = queryParams.get("user");
   const [messages, setMessages] = useState("");
   const messageEndRef = useRef(null);
+  const dyParams = useParams();
+  const[chat_id,chat_user]=dyParams._id.split("&");
   //const { chat_id, chat_user } = useParams();  // Destructure useParams
   const userData = JSON.parse(localStorage.getItem("userData"));
+  console.log(chat_id._id,);
   const [allMessages, setAllMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
   // const dyParams = useParams();
