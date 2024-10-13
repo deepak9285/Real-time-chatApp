@@ -8,7 +8,7 @@ const cors = require("cors");
 require("dotenv").config();
 const { db_connect } = require("./config/db");
 db_connect();
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: "https://real-time-chat-app-pi-swart.vercel.app/" }));
 app.get("/", (req, res) => {
   res.json("Api is running");
 });
