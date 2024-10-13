@@ -12,7 +12,7 @@ function Login() {
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch("http://localhost:8080/users/login", {
+      const response = await fetch("https://real-time-chatapp-backend-8cx4.onrender.com/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

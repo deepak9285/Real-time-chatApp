@@ -13,7 +13,7 @@ function Signup() {
     setSuccess(null);
 
     try {
-      const response = await fetch("http://localhost:8080/users/signup", {
+      const response = await fetch("https://real-time-chatapp-backend-8cx4.onrender.com/users/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -26,7 +26,7 @@ export default function Users() {
     };
 
     // Fetching users from the database
-    fetch("http://localhost:8080/users/fetchUsers", {
+    fetch("https://real-time-chatapp-backend-8cx4.onrender.com/users/fetchUsers", {
       method: "GET",
       headers: config.headers,
     })
@@ -46,7 +46,7 @@ export default function Users() {
     console.log("Creating a chat with", selectedUser.name); // Logging selected user's name
     console.log(selectedUser._id);
     // Sending POST request to create a chat
-    fetch("http://localhost:8080/chat/", {
+    fetch("https://real-time-chatapp-backend-8cx4.onrender.com/chat/", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${userData.token}`,
