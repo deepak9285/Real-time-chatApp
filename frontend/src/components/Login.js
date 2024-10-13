@@ -12,13 +12,16 @@ function Login() {
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch("https://real-time-chatapp-backend-8cx4.onrender.com/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "https://real-time-chatapp-backend-8cx4.onrender.com/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Login failed");
@@ -112,7 +115,7 @@ function Login() {
             </div>
             <div className="text-sm">
               <button
-                onClick={()=>navigate("/signup")}
+                onClick={() => navigate("/signup")}
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
                 Singup?
