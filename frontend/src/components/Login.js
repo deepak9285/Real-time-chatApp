@@ -111,12 +111,12 @@ function Login() {
               </label>
             </div>
             <div className="text-sm">
-              <a
-                href="#"
+              <button
+                onClick={()=>navigate("/signup")}
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                Forgot your password?
-              </a>
+                Singup?
+              </button>
             </div>
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
