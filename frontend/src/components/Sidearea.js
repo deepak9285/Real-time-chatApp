@@ -23,7 +23,7 @@ function Sidearea() {
         Authorization: `Bearer ${userData.token}`,
       },
     };
-    fetch("http://localhost:8080/chat/", {
+    fetch("https://real-time-chatapp-backend-8cx4.onrender.com/chat/", {
       method: "GET",
       headers: config.headers,
     })

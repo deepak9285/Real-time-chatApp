@@ -30,7 +30,7 @@ function Chatarea() {
         "Content-Type": "application/json",
       },
     };
-    fetch("http://localhost:8080/message/", {
+    fetch("https://real-time-chatapp-backend-8cx4.onrender.com/message/", {
       method: "POST",
       headers: config.headers,
       body: JSON.stringify({
