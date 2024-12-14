@@ -8,9 +8,8 @@ function Sidearea() {
   const dispatch = useDispatch();
   const [Conversation, setConversation] = useState([]);
 
-  // Use useContext to get the refresh and setRefresh from mycontext as an object
   const context = useContext(mycontext);
-  const { refresh, setRefresh } = context || {}; // Ensure you have a fallback in case context is undefined
+  const { refresh, setRefresh } = context || {};
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   if (!userData) {
@@ -27,7 +26,7 @@ function Sidearea() {
       method: "GET",
       headers: config.headers,
     })
-      .then((response) => response.json()) // Parse response as JSON
+      .then((response) => response.json())
       .then((data) => {
         console.log("Fetched conversations", data);
         setConversation(data);
@@ -38,97 +37,99 @@ function Sidearea() {
   }, [userData.token]);
 
   return (
-    <div className="w-[30vw] bg-gray-800 rounded-2xl text-white h-screen p-4">
-      <div className="flex flex-col">
-        {/* Search Bar */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none focus:bg-gray-600"
-          />
-        </div>
-        <div>
-          {Conversation.map((conversation, index) => {
-            if (conversation.users.length === 1) {
-              return <div key={index}></div>;
-            }
-            if (conversation.latestMessage === undefined) {
-              return (
-                <div
-                  key={index}
-                  onClick={() => {
-                    console.log("Refresh fired from side bar");
-                    setRefresh && setRefresh(!refresh); // Check if setRefresh is available before using it
-                  }}
-                >
-                  <div
-                    className=""
-                    onClick={() =>
-                      navigate(
-                       `chat?id=${conversation._id}&user=${conversation.users[1].name}`
-                      )
-                    }
-                  >
-                    <p>{conversation.users[1].name[0]}</p>
-                  </div>
-                  <p>{conversation.users[1].name}</p>
-                  <p>No previous message, click here to start a new chat</p>
-                </div>
-              );
-            } else {
-              return (
-                <div
-                  key={index}
-                  className=""
-                  onClick={() =>
-                    navigate(
-                      `/app/chat?id=${conversation._id}&user=${conversation.users[1].name}`
-                    )
-                  }
-                >
-                  <p>{conversation.users[1].name[0]}</p>
-                  <p>{conversation.users[1].name}</p>
-                </div>
-              );
-            }
-          })}
-        </div>
-
-        {/* Add Friend Button */}
-        <button className="w-full p-2 bg-blue-500 rounded hover:bg-blue-400">
-          Add Friend
-        </button>
-      </div>
-      <div>
-        <button
-          className="w-full p-2 mt-4 mb-4 bg-blue-500 rounded hover:bg-blue-400"
-          onClick={() => navigate("groups")}
-        >
-          Online users
-        </button>
+    <div className="w-[30vw] bg-gray-900 rounded-2xl text-white h-screen p-4 flex flex-col">
+      {/* Search Bar */}
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search for conversations"
+          className="w-full p-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
-      <div className="bg-gray-700 mt-auto p-4 rounded-lg">
-        <div className="flex items-center space-x-4 mb-4">
-          <img
-            src="https://via.placeholder.com/50"
-            alt="Profile"
-            className="w-12 h-12 rounded-full"
-          />
-          <div>
-            <h3 className="text-lg font-semibold">{userData.user.name}</h3>
-            <p>{userData.user.email}</p>
-          </div>
+      {/* Conversation List */}
+      <div className="flex-grow overflow-y-auto space-y-4">
+        {Conversation.map((conversation, index) => {
+          if (conversation.users.length === 1) {
+            return <div key={index}></div>;
+          }
+
+          const handleConversationClick = () => {
+            console.log("Refresh fired from side bar");
+            setRefresh && setRefresh(!refresh);
+            navigate(`chat/${conversation._id}?user=${conversation.users[1].name}`);
+          };
+
+          return (
+            <div
+              key={index}
+              onClick={handleConversationClick}
+              className="p-4 bg-gray-800 rounded-lg hover:bg-gray-700 cursor-pointer flex items-center space-x-3"
+            >
+              <div className="bg-blue-500 text-white rounded-full h-10 w-10 flex items-center justify-center font-bold">
+                {conversation.users[1].name[0]}
+              </div>
+              <div className="flex-grow">
+                <p className="font-semibold">{conversation.users[1].name}</p>
+                <p className="text-sm text-gray-400">
+                  {conversation.latestMessage
+                    ? conversation.latestMessage.content
+                    : "No previous message, click here to start a new chat"}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Chat with AI Section */}
+      <div
+        className="p-4 bg-purple-600 rounded-lg hover:bg-purple-500 cursor-pointer flex items-center space-x-3 mt-4"
+        onClick={() => navigate("AiChatPage")}
+      >
+        <div className="bg-purple-800 text-white rounded-full h-10 w-10 flex items-center justify-center font-bold">
+          AI
         </div>
-        <div className="">
-          <button className="w-full p-2 bg-blue-500 rounded hover:bg-blue-400">
-            View Profile
-          </button>
+        <div className="flex-grow">
+          <p className="font-semibold">Chat with AI</p>
+          <p className="text-sm text-gray-200">
+            Start a conversation with our AI assistant.
+          </p>
         </div>
       </div>
+
+      {/* Add Friend Button */}
+  
+
+      {/* Online Users Button */}
       <button
-        className="bg-blue-300 text-black p-3 rounded-lg m-3 "
+        className="w-full p-2 bg-green-500 rounded-lg hover:bg-green-600 text-white font-semibold mt-4"
+        onClick={() => navigate("groups")}
+      >
+        Online Users
+      </button>
+
+      {/* Profile Section */}
+      <div className="bg-gray-800 mt-6 p-4 rounded-lg flex items-center space-x-4">
+        <img
+          src="https://via.placeholder.com/50"
+          alt="Profile"
+          className="w-12 h-12 rounded-full"
+        />
+        <div>
+          <h3 className="text-lg font-semibold">{userData.user.name}</h3>
+          <p className="text-sm text-gray-400">{userData.user.email}</p>
+        </div>
+      </div>
+
+      {/* View Profile Button */}
+      <button onClick={()=>navigate('ViewProfile')} className="w-full p-2 bg-blue-500 rounded-lg hover:bg-blue-600 text-white font-semibold mt-4">
+        View Profile
+      </button>
+
+      {/* Logout Button */}
+      <button
+        className="w-full p-2 bg-red-500 rounded-lg hover:bg-red-600 text-white font-semibold mt-4"
         onClick={() => {
           localStorage.removeItem("userData");
           navigate("/");

@@ -8,6 +8,8 @@ import WelcomePage from "./components/WelcomePage";
 import Chatarea from "./components/Chatarea";
 import GroupUser from "./components/GroupUser";
 import Users from "./components/Users";
+import AiChatPage from "./components/AiChatPage";
+import ViewProfile from "./components/ViewProfile";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
             <Route path="chat/:_id" element={<Chatarea />} />
             {/* <Route path="users" element={<WelcomePage />} /> */}
             <Route path="groups" element={<Users/>} />
+            <Route path="AiChatPage" element={<AiChatPage/>}/>
+            <Route path='ViewProfile' element={<ViewProfile/>}/>
           </Route>
         </Routes>
       </div>

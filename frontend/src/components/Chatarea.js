@@ -1,33 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
-// import { FaRegTrashAlt } from "react-icons/fa";
+import { useParams, useLocation } from "react-router-dom";
 import MessageByMe from "./MessageByMe";
-import { useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import MessageByOther from "./MessageByOther";
+import "./Chatarea.css"; // Link to the CSS file for professional styling
 
 function Chatarea() {
+  const { _id: chat_id } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  // const chat_id = queryParams.get("id");
-  // const chat_user = queryParams.get("user");
+  const chat_user = queryParams.get("user");
   const [messages, setMessages] = useState("");
   const messageEndRef = useRef(null);
-  const dyParams = useParams();
-  const[chat_id,chat_user]=dyParams._id.split("&");
-  //const { chat_id, chat_user } = useParams();  // Destructure useParams
   const userData = JSON.parse(localStorage.getItem("userData"));
-  console.log(chat_id._id,);
   const [allMessages, setAllMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  // const dyParams = useParams();
- // const [chat_id, chat_user] = dyParams._id.split("&");
- console.log(chat_id);
+
   const handleSend = async () => {
-    if (!messages) return; // Don't send empty messages
+    if (!messages.trim()) return;
     const config = {
       headers: {
         Authorization: `Bearer ${userData.token}`,
-        "Content-Type": "application/json",
       },
     };
     fetch("https://real-time-chatapp-backend-8cx4.onrender.com/message/", {
@@ -35,21 +27,14 @@ function Chatarea() {
       headers: config.headers,
       body: JSON.stringify({
         content: messages,
-        chatId: chat_id, // Use destructured chat_id
+        chatId: chat_id,
       }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Message sent", data);
-        setMessages(""); // Clear the input after sending
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    });
+
   };
 
   useEffect(() => {
-    if (!chat_id) return; // Don't fetch messages if there's no chat ID
+    if (!chat_id) return;
 
     const config = {
       headers: {
@@ -57,17 +42,29 @@ function Chatarea() {
       },
     };
 
-    fetch(`http://localhost:8080/message/${chat_id}`, { // Fix URL path
-      method: "GET",
-      headers: config.headers,
-    })
-      .then((response) => response.json())
-      .then(({ data }) => {
-        setAllMessages(data);
+    fetch(
+      `https://real-time-chatapp-backend-8cx4.onrender.com/message/${chat_id}`,
+      {
+        method: "GET",
+        headers: config.headers,
+      }
+    )
+      .then((response) => {
+        console.log(response);
+        response.json();
+      })
+      .then((data) => {
+        setAllMessages(data || []);
         setLoaded(true);
       })
       .catch((error) => console.error("Error fetching messages:", error));
-  }, [chat_id, userData.token]); // Add userData.token dependency
+  }, [chat_id, userData.token]);
+
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [allMessages]);
 
   if (!chat_id) {
     return <div>Error: No chat ID provided in the URL</div>;
@@ -75,49 +72,54 @@ function Chatarea() {
 
   if (!loaded) {
     return (
-      <div>
+      <div className="loading-container">
         <h1>Loading...</h1>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1>Chat with {chat_user}</h1> {/* Show chat user */}
-      <div>
-        {allMessages
-          .slice(0)
-          .reverse()
-          .map((message, index) => {
-            const sender = message.sender;
-            const self_id = userData._id;
-            if (sender.id === self_id) {
-              return (
-                <MessageByMe props={message} content={messages} key={index} />
-              );
-            } else {
-              return (
-                <MessageByOther props={sender} content={messages} key={index} />
-              );
-            }
-          })}
+    <div className="chat-container">
+      <div className="chat-header">
+        <h1>Chat with {chat_user}</h1>
       </div>
-      <div ref={messageEndRef} />
-      <div className="border">
+      <div className="messages-container">
+        {allMessages.length > 0 ? (
+          allMessages
+            .slice(0)
+            .reverse()
+            .map((message, index) => {
+              const sender = message.sender;
+              const self_id = userData._id;
+              return sender._id === self_id ? (
+                <MessageByMe key={index} props={message} />
+              ) : (
+                <MessageByOther key={index} props={message} />
+              );
+            })
+        ) : (
+          <p className="no-messages">No messages yet</p>
+        )}
+        <div ref={messageEndRef} />
+      </div>
+      <div className="message-input-container">
         <input
+          className="message-input"
           placeholder="Type a message"
           value={messages}
           onChange={(e) => setMessages(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.code === "Enter") {
               handleSend();
+              setMessages("");
             }
           }}
         />
-        <button className="border" onClick={handleSend}>Send</button>
+        <button className="send-button" onClick={() => handleSend()}>
+          Send
+        </button>
       </div>
     </div>
   );
 }
-
 export default Chatarea;
